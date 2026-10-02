@@ -48,21 +48,11 @@ Projekt bazuje na korpusie **Webis-CMV-20 (ChangeMyView Corpus 2020)**:
 * `data/raw/author_liwc.jsonl.bz2` — cechy psycholingwistyczne autorów (LIWC: *certain*, *tentat*, *tone*, *affect*).
 * `data/processed/cmv_persuasion_pairs_sample.jsonl` — oczyszczona próbka 1 000 par gotowa do natychmiastowego modelowania.
 
----
-
-## 🔄 4. Ponowne Wykorzystanie Narzędzi z Poprzedniego Projektu
-
-Projekt bezpośrednio wykorzystuje sprawdzone komponenty z poprzedniej pracy projektowej ([`nikabienkowska-svg/Praca-projektowa-`](https://github.com/nikabienkowska-svg/Praca-projektowa-)):
-1. **`sentence-transformers` & `transformers`**:
-   - Pipeline do generowania embeddingów semantycznych (`all-MiniLM-L6-v2`) i wyliczania podobieństwa kosinusowego argumentów.
-2. **`scikit-learn`**:
-   - Sprawdzony pipeline ewaluacji (ROC-AUC, PR-AUC, F1, macierz pomyłek) dla modeli bazowych.
-3. **`Gradio` (Aplikacja demonstracyjna)**:
-   - Budowa interaktywnego panelu dla prowadzącego/recenzenta: wklejenie posta i kontrargumentu z wizualizacją prawdopodobieństwa perswazji i wskaźnika pewności w czasie rzeczywistym!
 
 ---
 
-## 👥 5. Podział Pracy w Zespole
+## 👥 4. Podział Pracy w Zespole
+
 
 ```
 ┌─────────────────────────────────┐      ┌─────────────────────────────────┐      ┌─────────────────────────────────┐
@@ -82,7 +72,7 @@ Projekt bezpośrednio wykorzystuje sprawdzone komponenty z poprzedniej pracy pro
 
 ---
 
-## 🗂️ 6. Struktura Projektu
+## 🗂️ 5. Struktura Projektu
 
 ```text
 ├── .github/
@@ -131,7 +121,7 @@ Projekt bezpośrednio wykorzystuje sprawdzone komponenty z poprzedniej pracy pro
 
 ---
 
-## 🚀 7. Jak Zacząć (Szybki Start)
+## 🚀 6. Jak Zacząć (Szybki Start)
 
 ### 1. Klonowanie repozytorium:
 ```bash
