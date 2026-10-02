@@ -67,79 +67,48 @@ Projekt bazuje na korpusie **Webis-CMV-20 (ChangeMyView Corpus 2020)**:
 | Rola w zespole | Zakres odpowiedzialności | Pliki i moduły |
 | :--- | :--- | :--- |
 | **Inżynier Danych i Lingwistyki NLP** | Czyszczenie i przygotowanie par CMV, ekstrakcja markerów zwątpienia (*hedging*) i pewności (*certainty*), łączenie z cechami LIWC, analiza EDA. | `src/data/`, `src/features/text_features.py`, `notebooks/01_eda_...`, `notebooks/02_linguistic_...` |
-| **Specjalista Modelowania Transformerów** | Fine-tuning modelu BERT / RoBERTa do klasyfikacji sekwencji par, optymalizacja hiperparametrów (learning rate, warm-up, weight decay), benchmarking. | `src/models/bert_classifier.py`, `notebooks/04_bert_fine_tuning_...` |
-| **Analityk Interpretowalności i Wdrożenia (XAI & Demo)** | Modele bazowe (TF-IDF + Random Forest / Regresja Logistyczna), śledzenie trajektorii przekonań, wizualizacja wag atencji oraz interaktywne demo w **Gradio**. | `src/models/baselines.py`, `src/interpretability/belief_trajectory.py`, `notebooks/05_belief_evolution_...` |
+| **Specjalista Modelowania Transformerów** | Fine-tuning modelu BERT do klasyfikacji perswazji, dobór hiperparametrów i trening na GPU (RTX 2080 Ti). | `src/model.py`, `notebooks/02_modelowanie_bert.ipynb` |
+| **Analityk Ewaluacji i Sprawozdań** | Ewaluacja metryk (ROC-AUC, F1), wizualizacja ewolucji pewności w dyskusji, koordynacja raportów etapowych. | `RAPORTY/`, `notebooks/01_eksploracja_danych.ipynb` |
 
 ---
 
 ## 🗂️ 5. Struktura Projektu
 
+Układ katalogów został zorganizowany według wymogów projektowych:
+
 ```text
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── task.md                 # Szablon nowego zadania zespołowego
-│   │   └── bug_report.md           # Szablon zgłoszenia błędu
-│   └── pull_request_template.md    # Szablon PR (wymóg checklisty przed scaleniem)
-├── config/
-│   └── config.yaml                 # Centralna konfiguracja (BERT, ścieżki, markery)
+├── RAPORTY/                       # 8 etapowych raportów projektowych (wg szablonu semestralnego)
+│   ├── Raport_1_problem_i_hipotezy.md
+│   ├── Raport_2_pozyskanie_danych.md
+│   ├── Raport_3_eksploracja_i_czyszczenie.md
+│   ├── Raport_4_jakosc_redukcja_wymiarow.md
+│   ├── Raport_5_przeglad_podejsc.md
+│   ├── Raport_6_implementacja.md
+│   ├── Raport_7_wyniki_i_analiza_bledow.md
+│   └── Raport_8_weryfikacja_hipotez_i_wnioski.md
 ├── data/
-│   ├── raw/                        # Pobrane surowe zbiory pairs.jsonl.bz2, author_liwc.jsonl.bz2
-│   ├── processed/                  # Wygenerowana próbka cmv_persuasion_pairs_sample.jsonl
-│   └── README.md                   # Opis zbioru Webis-CMV-20
+│   ├── raw/                       # Pobrane surowe pliki Webis-CMV (pairs.jsonl.bz2, author_liwc.jsonl.bz2)
+│   ├── processed/                 # Gotowa próbka cmv_persuasion_pairs_sample.jsonl
+│   └── README.md                  # Opis tabel i linki do Zenodo
 ├── notebooks/
-│   ├── 01_eda_webis_cmv_overview.ipynb
-│   ├── 02_linguistic_certainty_and_liwc_analysis.ipynb
-│   ├── 03_baseline_models_tfidf_and_embeddings.ipynb
-│   ├── 04_bert_fine_tuning_and_persuasion_prediction.ipynb
-│   └── 05_belief_evolution_and_gradio_demo.ipynb
+│   ├── 01_eksploracja_danych.ipynb    # Wczytanie danych, statystyki słów, pierwsze wykresy
+│   └── 02_modelowanie_bert.ipynb      # Trening modelu BERT
 ├── src/
 │   ├── __init__.py
-│   ├── data/
-│   │   ├── __init__.py
-│   │   ├── loader.py               # Wczytywanie przetworzonych rekordów CMV
-│   │   └── prepare_cmv.py          # Skrypt przetwarzający surowe bz2 do czystego JSONL
-│   ├── features/
-│   │   ├── __init__.py
-│   │   └── text_features.py        # Markery hedgingu, certainty i sentence-transformers
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── baselines.py            # Modele klasyczne (TF-IDF, Regresja, Random Forest)
-│   │   ├── bert_classifier.py      # Fine-tuning BERT do klasyfikacji perswazji
-│   │   └── train.py                # Skrypt treningowy baseline'ów
-│   ├── interpretability/
-│   │   ├── __init__.py
-│   │   └── belief_trajectory.py    # Śledzenie ewolucji przekonań i punktu zwrotnego
-│   └── utils/
-│       ├── __init__.py
-│       └── metrics.py              # Metryki: ROC-AUC, PR-AUC, F1, Confusion Matrix
-├── tests/
-│   └── test_pipeline.py            # Test jednostkowy spójności modułów NLP i modeli
-├── .gitignore                      # Ochrona przed wrzucaniem dużych danych, wag i cache
-├── requirements.txt                # Biblioteki (Transformers, Sentence-Transformers, PyTorch, Gradio)
-└── README.md                       # Główna dokumentacja projektu
+│   ├── loader.py                  # Prosta funkcja load_cmv_dataframe()
+│   ├── features.py                # Zliczanie słów wahania (hedging) i pewności
+│   ├── model.py                   # Klasa modelu BERT
+│   └── prepare_cmv.py             # Skrypt rozpakowujący dane
+├── PLAN_DZIALANIA.md              # Przejrzysta mapa drogowa projektu i terminy etapów
+├── requirements.txt               # Zależności bibliotek w Pythonie
+├── .gitignore                     # Blokada commitowania ciężkich baz i wag
+└── README.md                      # Główny opis projektu
 ```
 
 ---
 
-## 🚀 6. Jak Zacząć (Szybki Start)
+## 🚀 6. Jak Zacząć
 
-### 1. Klonowanie repozytorium:
-```bash
-git clone https://github.com/nikabienkowska-svg/Praca-projektowa-II-Modelowanie-trajektorii-uczenia-si-w-systemach-LMS.git
-cd Praca-projektowa-II-Modelowanie-trajektorii-uczenia-si-w-systemach-LMS
-```
-
-### 2. Utworzenie środowiska wirtualnego:
-```bash
-python3 -m venv .venv
-source .venv/bin/activate      # Linux / macOS
-# lub: .venv\Scripts\activate  # Windows
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 3. Przygotowanie danych testowych:
-Zbiór par został już pobrany do `data/raw/pairs.jsonl.bz2`. Aby wygenerować próbkę do natychmiastowej pracy:
-```bash
-python src/data/prepare_cmv.py --max_records 1000
-```
+1. Przeczytaj plik [`PLAN_DZIALANIA.md`](PLAN_DZIALANIA.md) — znajdziesz tam terminy i podział zadań na cały semestr.
+2. Zapoznaj się z gotowym [`RAPORTY/Raport_1_problem_i_hipotezy.md`](RAPORTY/Raport_1_problem_i_hipotezy.md) oraz [`RAPORTY/Raport_2_pozyskanie_danych.md`](RAPORTY/Raport_2_pozyskanie_danych.md).
+3. Dane są już pobrane i czekają w `data/processed/cmv_persuasion_pairs_sample.jsonl` — możesz od razu otworzyć `notebooks/01_eksploracja_danych.ipynb`!
