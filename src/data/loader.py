@@ -1,34 +1,37 @@
-"""Moduł odpowiedzialny za ładowanie i walidację tabel ze zbioru OULAD."""
+"""Moduł odpowiedzialny za ładowanie i walidację danych Webis-CMV-20 (pary i cechy LIWC)."""
 
 import os
-from typing import Dict, Optional
-import pandas as pd
+import json
+import bz2
+from typing import List, Dict, Any, Generator
 
 
-def load_raw_tables(raw_dir: str = "data/raw") -> Dict[str, pd.DataFrame]:
-    """Wczytuje surowe tabele OULAD z podanego katalogu.
-    
-    Zwraca słownik z ramkami danych dla:
-    courses, assessments, vle, studentInfo, studentRegistration,
-    studentAssessment, studentVle.
-    """
-    tables = [
-        "courses",
-        "assessments",
-        "vle",
-        "studentInfo",
-        "studentRegistration",
-        "studentAssessment",
-        "studentVle",
-    ]
-    data = {}
-    for table_name in tables:
-        path = os.path.join(raw_dir, f"{table_name}.csv")
-        if not os.path.exists(path):
-            raise FileNotFoundError(
-                f"Nie znaleziono pliku {path}. Upewnij się, że dane OULAD zostały "
-                "pobrane do folderu data/raw/ zgodnie z data/README.md."
-            )
-        print(f"Ładowanie tabeli {table_name}...")
-        data[table_name] = pd.read_csv(path)
-    return data
+def load_cmv_sample(jsonl_path: str = "data/processed/cmv_persuasion_pairs_sample.jsonl") -> List[Dict[str, Any]]:
+    """Wczytuje przygotowaną próbkę par perswazyjnych z pliku JSONL."""
+    if not os.path.exists(jsonl_path):
+        raise FileNotFoundError(
+            f"Nie znaleziono pliku {jsonl_path}. Uruchom najpierw skrypt:\n"
+            "python src/data/prepare_cmv.py"
+        )
+    records = []
+    with open(jsonl_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                records.append(json.loads(line))
+    return records
+
+
+def stream_cmv_pairs_raw(
+    bz2_path: str = "data/raw/pairs.jsonl.bz2", limit: int = 1000
+) -> Generator[Dict[str, Any], None, None]:
+    """Strumieniuje rekordy ze skompresowanego pliku bz2."""
+    if not os.path.exists(bz2_path):
+        raise FileNotFoundError(f"Brak pliku surowego {bz2_path}")
+    count = 0
+    with bz2.open(bz2_path, "rt", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                yield json.loads(line)
+                count += 1
+                if limit and count >= limit:
+                    break

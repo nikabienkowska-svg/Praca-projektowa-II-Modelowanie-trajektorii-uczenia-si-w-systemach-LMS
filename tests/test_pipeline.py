@@ -1,86 +1,53 @@
-"""Test sprawdzający spójność całego pipeline'u: mock data -> features -> baselines -> LSTM.
-Uruchom po aktywacji środowiska wirtualnego:
-    python tests/test_pipeline.py
-"""
+"""Test jednostkowy sprawdzający spójność modułów CMV, lingwistyki i baseline'ów."""
 
 import os
-import shutil
-
-from src.data.download_oulad import generate_mock_oulad_sample
-from src.data.loader import load_raw_tables
-from src.features.sequence_builder import build_student_sequences
-from src.models.baselines import train_baseline_models
-from src.models.lstm_model import StudentDropoutLSTM
-from src.models.train import train_lstm_pipeline
-from src.interpretability.motivation_patterns import extract_inactivity_crisis_patterns
+import json
+from src.features.text_features import extract_linguistic_markers
+from src.interpretability.belief_trajectory import compute_belief_trajectory, detect_inflection_point
+from src.models.baselines import build_tabular_features, train_baseline_persuasion_models
 
 
-def test_entire_lms_pipeline():
-    test_raw_dir = "data/test_raw"
-    try:
-        # 1. Mock data generation
-        generate_mock_oulad_sample(output_dir=test_raw_dir, num_students=50)
+def test_cmv_nlp_pipeline():
+    # 1. Sprawdzenie ekstrakcji markerów lingwistycznych
+    text_sure = "This is definitely a proven fact and undeniably true."
+    stats_sure = extract_linguistic_markers(text_sure)
+    assert stats_sure["certainty_count"] >= 2
+    assert stats_sure["hedging_count"] == 0
 
-        # 2. Data Loader
-        data = load_raw_tables(raw_dir=test_raw_dir)
-        assert "studentVle" in data
-        assert len(data["studentInfo"]) == 50
+    text_tentative = "Perhaps you have a point, but maybe there is another side."
+    stats_tent = extract_linguistic_markers(text_tentative)
+    assert stats_tent["hedging_count"] >= 2
 
-        # 3. Sequence building
-        X, y, student_ids, feature_names = build_student_sequences(
-            student_vle=data["studentVle"],
-            vle=data["vle"],
-            student_reg=data["studentRegistration"],
-            observation_window_days=30,
-            prediction_horizon_days=7,
-        )
-        assert X.shape[0] == 50
-        assert X.shape[1] == 30
-        assert X.shape[2] == len(feature_names)
-        assert len(y) == 50
+    # 2. Sprawdzenie trajektorii przekonań
+    comments_seq = [
+        "You are wrong. It is impossible to dispute my initial statement.",
+        "I still think I am right, but I might see what you mean.",
+        "Fair point. Perhaps I had not considered that perspective. I concede.",
+    ]
+    traj_df = compute_belief_trajectory(comments_seq)
+    assert len(traj_df) == 3
+    inflection = detect_inflection_point(traj_df)
+    assert inflection in [1, 2]
 
-        # 4. Baselines
-        X_np = X.numpy()
-        y_np = y.numpy()
-        split = 35
-        baseline_results = train_baseline_models(
-            X_train_seq=X_np[:split],
-            y_train=y_np[:split],
-            X_val_seq=X_np[split:],
-            y_val=y_np[split:],
-            feature_names=feature_names,
-        )
-        assert "LogisticRegression" in baseline_results
-        assert "RandomForest" in baseline_results
+    # 3. Sprawdzenie budowy cech dla par
+    mock_records = [
+        {
+            "op_text": "I think X is true.",
+            "delta_argument": "Consider Y, you might find it convincing.",
+            "nodelta_argument": "You are just wrong.",
+        }
+    ] * 20
+    X, y = build_tabular_features(mock_records)
+    assert X.shape[0] == 40
+    assert len(y) == 40
 
-        # 5. Deep Learning LSTM training
-        model, history = train_lstm_pipeline(
-            X_train=X[:split],
-            y_train=y[:split],
-            X_val=X[split:],
-            y_val=y[split:],
-            hidden_dim=16,
-            num_layers=1,
-            batch_size=8,
-            epochs=2,
-        )
-        assert isinstance(model, StudentDropoutLSTM)
-        assert len(history["train_loss"]) == 2
+    # 4. Sprawdzenie modeli bazowych
+    res = train_baseline_persuasion_models(X[:30], y[:30], X[30:], y[30:])
+    assert "LogisticRegression" in res
+    assert "RandomForest" in res
 
-        # 6. Motivation crisis patterns
-        crisis_df = extract_inactivity_crisis_patterns(
-            student_vle=data["studentVle"],
-            student_reg=data["studentRegistration"],
-            vle=data["vle"],
-            pre_dropout_window_days=7,
-        )
-        assert isinstance(crisis_df, object)
-
-        print("\n✅ Wszystkie testy pipeline'u przeszły pomyślnie!")
-    finally:
-        if os.path.exists(test_raw_dir):
-            shutil.rmtree(test_raw_dir)
+    print("\n✅ Wszystkie testy modułów NLP, trajektorii i modeli bazowych przeszły pomyślnie!")
 
 
 if __name__ == "__main__":
-    test_entire_lms_pipeline()
+    test_cmv_nlp_pipeline()
