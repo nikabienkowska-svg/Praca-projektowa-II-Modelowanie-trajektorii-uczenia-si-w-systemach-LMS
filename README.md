@@ -4,29 +4,13 @@ Projekt polega na analizie danych z platformy edukacyjnej w celu wczesnego przew
 
 ---
 
-## 👥 Zespół i podział ról
-
-1. **Patrycja Goźlińska (Sekretarz)**
-   - Prowadzenie dokumentacji projektu.
-   - Tworzenie i organizowanie cotygodniowych raportów.
-
-2. **Katarzyna Rogozińska (Badacz)**
-   - Eksploracja danych i szukanie trendów (tzw. wzorców "kryzysu motywacyjnego").
-   - Analizowanie wyników działania algorytmów.
-
-3. **Weronika Bieńkowska (Moderator)**
-   - Programowanie i testowanie modeli sztucznej inteligencji (LSTM, XGBoost).
-   - Zarządzanie strukturą i organizacją całego repozytorium na GitHubie.
-
----
-
 ## 📂 Struktura repozytorium
 
 Przygotowaliśmy czystą przestrzeń do wypełniania w kolejnych tygodniach pracy:
 
 - 📁 `RAPORTY/` - tutaj znajdują się oficjalne raporty (np. z pierwszych i drugich zajęć). Będziemy je tu dodawać tydzień po tygodniu.
 - 📁 `data/` - miejsce na surowe zbiory danych OULAD, które dopiero tu pobierzemy.
-- 📁 `notebooks/` - folder na notatniki Jupyter z eksploracją danych (zadania Kasi i Patrycji).
+- 📁 `notebooks/` - folder na notatniki Jupyter z eksploracją danych.
 - 📁 `src/` - miejsce, gdzie będziemy wrzucać nasz kod (od wczytywania danych po same modele).
 
 ---
