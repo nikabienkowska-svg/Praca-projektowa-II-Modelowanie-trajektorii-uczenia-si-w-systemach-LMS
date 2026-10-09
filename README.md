@@ -1,32 +1,46 @@
 # Modelowanie trajektorii uczenia się w systemach LMS
 
-Projekt polega na analizie danych z platformy edukacyjnej w celu wczesnego przewidywania, czy uczeń zrezygnuje z kursu. Wykorzystujemy do tego sieci neuronowe analizujące sekwencje aktywności (logi, przerwy, zadania).
+Cześć! Tutaj znajduje się nasz projekt grupowy. W skrócie: tworzymy program, który będzie przewidywał, czy uczeń rzuci studia/kurs, na podstawie tego jak często klika w platformie edukacyjnej.
 
 ---
 
-## 📂 Struktura repozytorium
+## 👥 Zespół i podział ról
 
-Przygotowaliśmy czystą przestrzeń do wypełniania w kolejnych tygodniach pracy:
+1. **Patrycja Goźlińska (Sekretarz)**
+   - Prowadzenie dokumentacji projektu.
+   - Tworzenie i organizowanie cotygodniowych raportów.
 
-- 📁 `RAPORTY/` - tutaj znajdują się oficjalne raporty (np. z pierwszych i drugich zajęć). Będziemy je tu dodawać tydzień po tygodniu.
-- 📁 `data/` - miejsce na surowe zbiory danych OULAD, które dopiero tu pobierzemy.
-- 📁 `notebooks/` - folder na notatniki Jupyter z eksploracją danych.
-- 📁 `src/` - miejsce, gdzie będziemy wrzucać nasz kod (od wczytywania danych po same modele).
+2. **Katarzyna Rogozińska (Badacz)**
+   - Eksploracja danych i szukanie trendów (tzw. wzorców "kryzysu motywacyjnego").
+   - Analizowanie wyników działania algorytmów.
+
+3. **Weronika Bieńkowska (Moderator)**
+   - Programowanie i testowanie modeli sztucznej inteligencji (LSTM, XGBoost).
+   - Zarządzanie strukturą i organizacją całego repozytorium na GitHubie.
 
 ---
 
-## 📖 Słownik pojęć i technologii
+## 📂 Co tu w ogóle jest? (Przewodnik po folderach)
 
-### Pojęcia
-- **LMS (Learning Management System) / VLE** - platforma edukacyjna online, np. Moodle.
-- **Dropout / Withdrawn (Porzucenie kursu)** - moment, w którym student wyrejestrowuje się z zajęć.
-- **Kryzys motywacyjny** - etap zmniejszonego zaangażowania poprzedzający porzucenie kursu (mniej zadań, dłuższe przerwy).
-- **OULAD (Open University Learning Analytics Dataset)** - publiczny zbiór danych używany do naszych analiz.
+Uprościliśmy wszystko maksymalnie, żeby nikt się nie zgubił:
 
-### Technologie
-- **Python** - główny język programowania używany do analizy danych i modeli.
-- **PyTorch** - biblioteka służąca do budowy i trenowania zaawansowanych sieci neuronowych.
-- **LSTM (Long Short-Term Memory)** - architektura sieci neuronowych potrafiąca analizować sekwencje czasowe.
-- **XGBoost / Random Forest** - "klasyczne" algorytmy uczenia maszynowego używane przez nas do stworzenia punktu odniesienia.
-- **Pandas / Scikit-Learn** - biblioteki w Pythonie służące do zarządzania tabelami danych.
-- **Venv (Virtual Environment)** - wyizolowane środowisko lokalne zapobiegające konfliktom z innymi aplikacjami w systemie.
+- 📁 `RAPORTY/` - **Wysyłamy to prowadzącemu.** Tutaj wrzucamy oficjalne pliki Word (`.docx`), które oddajemy co tydzień na zajęciach. 
+- 📁 `data/` - **Nasz wielki magazyn danych.** Tutaj lądują potężne pliki Excel/CSV, z których będzie uczył się nasz model. Ze względu na swój rozmiar, te pliki żyją **tylko na naszych komputerach** i nie wysyłają się na GitHuba.
+- 📁 `notebooks/` - **Brudnopis badacza.** Tu Kasia i Patrycja będą otwierać notatniki (pliki `.ipynb`), rysować wykresy i patrzeć "co w tych danych piszczy".
+- 📁 `src/` - **Serce projektu (kod).** Tu Weronika trzyma skrypty. Obecnie jest tu tylko plik `pobierz_dane.py` - sprytny programik, który po odpaleniu sam pobiera dziewczynom pliki do folderu `data/`.
+- 📄 `README.md` - to jest ten plik, który właśnie czytasz!
+
+---
+
+## 📖 Słownik pojęć i technologii (Jak tego używamy?)
+
+### Z czym to się je na uczelni?
+- **OULAD** - wielka, darmowa baza danych o brytyjskich studentach. To nasze jedyne źródło wiedzy o tym, kto i kiedy klikał w Moodle'u.
+- **LMS (np. Moodle) / VLE** - po prostu uczelniana platforma. Nas interesuje, kiedy uczeń tam wszedł, a kiedy zniknął.
+- **Dropout** - moment, kiedy student wypisał się z kursu na zawsze. Próbujemy przewidzieć ten moment 7 dni wcześniej.
+
+### Magia informatyczna (Programowanie)
+- **Python** - język w którym wszystko to piszemy. 
+- **PyTorch** - gotowe "klocki Lego", z których budujemy naszą sieć neuronową.
+- **LSTM** - mądra sieć neuronowa. Zapamiętuje nie tylko "ile" student wyklikał, ale też "w jakiej kolejności".
+- **Pandas** - taki bardzo zaawansowany, ukryty pod kodem Pythona Excel do filtrowania i łączenia naszych danych.
